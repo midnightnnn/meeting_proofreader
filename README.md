@@ -83,4 +83,4 @@ graph LR
 ```
 
 ---
-*Created by 원석 for 가람람**
+Created by 원석 for 가람
