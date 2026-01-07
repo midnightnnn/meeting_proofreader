@@ -1,0 +1,25 @@
+steps:
+  # 1. Build the container image
+  - name: 'gcr.io/cloud-builders/docker'
+    args: ['build', '-t', 'gcr.io/$PROJECT_ID/meeting-proofreader', '.']
+  
+  # 2. Push the container image to Container Registry
+  - name: 'gcr.io/cloud-builders/docker'
+    args: ['push', 'gcr.io/$PROJECT_ID/meeting-proofreader']
+  
+  # 3. Deploy container to Cloud Run
+  - name: 'gcr.io/google.com/cloudsdktool/cloud-sdk'
+    entrypoint: gcloud
+    args:
+      - 'run'
+      - 'deploy'
+      - 'meeting-proofreader'
+      - '--image'
+      - 'gcr.io/$PROJECT_ID/meeting-proofreader'
+      - '--region'
+      - 'asia-northeast3'
+      - '--allow-unauthenticated'
+      # - '--set-env-vars'
+      # - 'OPENAI_API_KEY=$_OPENAI_API_KEY' # Substitution variable need setup
+images:
+  - 'gcr.io/$PROJECT_ID/meeting-proofreader'

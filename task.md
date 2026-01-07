@@ -1,0 +1,24 @@
+# Project Tasks: Semantic Meeting Proofreader (Parallelized)
+
+- [x] Analyze requirements and propose architecture
+- [x] Create Implementation Plan (Architecture Reorganization) <!-- id: 0 -->
+- [x] **Setup & Semantic Verification (Completed)** <!-- id: 1 -->
+    - [x] Initialize Reflex Project
+    - [x] Install dependencies & DB Setup
+    - [x] Verify Semantic Layer (ChromaDB + OpenAI)
+- [ ] **Track 1: Frontend User Interface (Streamlit)** <!-- id: 2 -->
+    - [ ] Setup Streamlit Layout (`app.py`)
+    - [ ] Create Metadata Sidebar (Input Fields)
+    - [ ] Implement Main Diff View (Split Columns)
+    - [ ] Add File Upload & Download Logic
+- [ ] **Track 2: Backend Agent Logic** <!-- id: 3 -->
+    - [ ] Implement Chunker (Sliding Window)
+    - [ ] Develop Corrector & Verifier Agents (LangGraph)
+    - [ ] Connect Agents to Mock Data
+- [ ] **Track 3: Semantic Data Core** <!-- id: 4 -->
+    - [ ] Optimize Semantic Retrieval (Context + Terms)
+    - [ ] Implement Persistent Storage Strategy
+- [ ] **Phase 5: Final Integration** <!-- id: 5 -->
+    - [ ] Connect UI to Backend Logic
+    - [ ] E2E Testing
+    - [ ] Deployment (GCP)

@@ -1,0 +1,11 @@
+streamlit==1.32.0
+langchain-openai
+langchain-core
+langgraph
+openai
+numpy
+python-dotenv
+pydantic
+pdfplumber
+olefile
+google-cloud-firestore

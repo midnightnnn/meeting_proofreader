@@ -1,0 +1,10 @@
+__pycache__
+*.pyc
+.git
+.env
+venv/
+.gemini/
+chroma_db/
+uploaded_files/
+test_log.txt
+debug_*.py

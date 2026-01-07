@@ -1,0 +1,5 @@
+   SERVICE              REGION           URL                                                               LAST DEPLOYED BY       LAST DEPLOYED AT
++  activity-api         asia-northeast3  https://activity-api-483086982600.asia-northeast3.run.app         midnightnnn@gmail.com  2025-09-07T14:32:23.032865Z
++  meeting-proofreader  asia-northeast3  https://meeting-proofreader-483086982600.asia-northeast3.run.app  midnightnnn@gmail.com  2025-12-30T17:03:20.832124Z
++  sem-layer-api        asia-northeast3  https://sem-layer-api-483086982600.asia-northeast3.run.app        midnightnnn@gmail.com  2025-11-24T07:20:09.143874Z
++  semlayer-api         asia-northeast3  https://semlayer-api-483086982600.asia-northeast3.run.app         midnightnnn@gmail.com  2025-10-06T22:43:49.050111Z
