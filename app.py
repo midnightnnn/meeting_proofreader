@@ -1,5 +1,6 @@
 import streamlit as st
 import time
+import concurrent.futures
 import json
 import base64
 from datetime import datetime
@@ -429,36 +430,59 @@ def main():
                 chunks = st.session_state.chunker.chunk_text(raw_text)
                 total_chunks = len(chunks)
                 
-                # Sequential Processing (for Cloud Run stability)
+                # Parallel Processing (ThreadPoolExecutor)
                 results_dict = {}
                 completed_count = 0
-                full_corrected_text = []
+                full_corrected_text = [] # Will be filled after sorting
                 
-                # 스레드에서 session_state 접근 불가하므로 미리 추출 (순차처리는 필요 없지만 유지)
+                # 스레드에서 session_state 접근 불가하므로 미리 추출
                 workflow = st.session_state.workflow
                 
-                print(f"[App] Starting sequential processing of {total_chunks} chunks.")
+                # Worker function for threading
+                def process_chunk_task(chunk_data, rules):
+                    # Pure python logic (no st calls here)
+                    return workflow.process_chunk(chunk_data, global_rules=rules)
+
+                max_workers = 5
+                print(f"[App] Starting parallel processing of {total_chunks} chunks with {max_workers} workers.")
+                status_text.text(f"병렬 처리 시작 ({max_workers} 스레드)...")
                 
-                for i, chunk in enumerate(chunks):
-                    idx = chunk['index']
-                    print(f"[App] Processing chunk {idx} ({i+1}/{total_chunks})...")
+                with concurrent.futures.ThreadPoolExecutor(max_workers=max_workers) as executor:
+                    # Submit all tasks
+                    # Map future to chunk index for tracking
+                    future_to_index = {
+                        executor.submit(process_chunk_task, chunk, rules_text): chunk['index'] 
+                        for chunk in chunks
+                    }
                     
-                    # Direct processing
-                    # chunk dict now has 'pre_context' and 'post_context'
-                    result = workflow.process_chunk(chunk, global_rules=rules_text)
-                    final_text = result['final_text']
-                    
-                    print(f"[App] Finished chunk {idx}")
-                    
-                    results_dict[idx] = final_text
-                    completed_count += 1
-                    
-                    progress = completed_count / total_chunks
-                    progress_bar.progress(progress)
-                    status_text.text(f"진행 중: {completed_count} / {total_chunks} 구역 완료")
+                    for future in concurrent.futures.as_completed(future_to_index):
+                        idx = future_to_index[future]
+                        try:
+                            result = future.result()
+                            final_text = result['final_text']
+                            results_dict[idx] = final_text
+                            print(f"[App] Finished chunk {idx}")
+                        except Exception as exc:
+                            print(f"[App] Chunk {idx} generated an exception: {exc}")
+                            # Fallback: maintain original text or error message
+                            # Retrieve original text from chunk list if possible, or just fail safely
+                            # Finding the original chunk text is expensive unless we have it handy.
+                            # We can just put a placeholder or re-raise
+                            st.error(f"Error in chunk {idx}: {exc}")
+                            results_dict[idx] = f"[Error Processing Chunk {idx}]"
+
+                        completed_count += 1
+                        progress = completed_count / total_chunks
+                        progress_bar.progress(progress)
+                        status_text.text(f"진행 중: {completed_count} / {total_chunks} 구역 완료")
                 
                 # 순서대로 정렬하여 합치기
-                full_corrected_text = [results_dict[i] for i in range(total_chunks)]
+                full_corrected_text = []
+                for i in range(total_chunks):
+                    if i in results_dict:
+                        full_corrected_text.append(results_dict[i])
+                    else:
+                        full_corrected_text.append("") # Should not happen if all futures complete
                 
                 # Finish
                 progress_bar.progress(100)
